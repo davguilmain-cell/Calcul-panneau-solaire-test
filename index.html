@@ -664,11 +664,11 @@ function calculerAngle() {
   const angles = anglesParLatitude(currentLat);
   const a = angles[p];
   const tips = {
-    hiver:     `En hiver à ${currentDeptName}, le soleil est bas. Un angle de <span>${a}°</span> maximise la captation hivernale.`,
-    printemps: `Au printemps à ${currentDeptName}, un angle de <span>${a}°</span> offre un excellent équilibre.`,
-    ete:       `En été à ${currentDeptName}, le soleil est haut. Un angle de <span>${a}°</span> capte au mieux les rayons estivaux.`,
-    automne:   `En automne à ${currentDeptName}, un angle de <span>${a}°</span> compense la baisse de hauteur solaire.`,
-    annee:     `Pour une installation fixe à ${currentDeptName} (lat. ${currentLat}°N), <span>${a}°</span> est l'angle optimal toute l'année.`
+    hiver:     `En hiver, le soleil est bas. Un angle de <span>${a}°</span> maximise la captation hivernale.`,
+    printemps: `Au printemps, un angle de <span>${a}°</span> offre un excellent équilibre.`,
+    ete:       `En été, le soleil est haut. Un angle de <span>${a}°</span> capte au mieux les rayons estivaux.`,
+    automne:   `En automne, un angle de <span>${a}°</span> compense la baisse de hauteur solaire.`,
+    annee:     `Pour une installation fixe (lat. ${currentLat}°N), <span>${a}°</span> est l'angle optimal toute l'année.`
   };
   document.getElementById("angleVal").innerHTML = a + '<span class="angle-unit">°</span>';
   document.getElementById("angleTip").innerHTML = tips[p];
