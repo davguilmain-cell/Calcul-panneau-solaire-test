@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>☀️ Solaire Optimum</title>
+  <link rel="manifest" href="#" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #f5c842;
+      --gold-dim: #a88a1a;
+      --orange: #ff7c1f;
+      --bg: #0a0a0a;
+      --card: #111111;
+      --border: #222;
+      --text: #e8e8e8;
+      --muted: #666;
+      --green: #39ff14;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* Stars background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(245,200,66,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 80% 10%, rgba(245,200,66,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 50% 80%, rgba(255,255,255,0.15) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 60%, rgba(255,255,255,0.1) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 50%, rgba(245,200,66,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.15) 0%, transparent 100%),
+        radial-gradient(1px 1px at 15% 85%, rgba(245,200,66,0.2) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .card-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      background: var(--gold);
+      color: #000;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    /* SELECT & LABELS */
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      margin-top: 14px;
+    }
+    label:first-of-type { margin-top: 0; }
+
+    select {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      padding: 10px 14px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f5c842' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    select:focus { outline: none; border-color: var(--gold); }
+
+    /* RESULT BOX */
+    .result-box {
+      background: linear-gradient(135deg, #151500, #1a1500);
+      border: 1px solid var(--gold-dim);
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .angle-display {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(42px, 12vw, 64px);
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 30px rgba(245,200,66,0.6);
+      line-height: 1;
+    }
+
+    .angle-unit {
+      font-size: 20px;
+      color: var(--gold-dim);
+      margin-left: 4px;
+    }
+
+    .angle-label {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .tip-text {
+      font-size: 13px;
+      color: #999;
+      margin-top: 10px;
+      line-height: 1.5;
+      border-top: 1px solid #222;
+      padding-top: 10px;
+    }
+
+    .tip-text span { color: var(--orange); font-weight: 600; }
+
+    /* VISUAL PANEL DIAGRAM */
+    .panel-visual {
+      display: flex;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .panel-svg-container {
+      width: 100%;
+      max-width: 300px;
+    }
+
+    /* TRIANGLE SECTION */
+    .triangle-section {}
+
+    .triangle-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .input-group {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .input-group label {
+      margin-top: 0;
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    .input-group input {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      width: 100%;
+    }
+    .input-group input:focus { outline: none; }
+
+    .input-unit {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .calc-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold), var(--orange));
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 14px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-bottom: 16px;
+    }
+    .calc-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+    /* TRIANGLE DRAWING */
+    .triangle-canvas {
+      width: 100%;
+      background: #0d0d0d;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .triangle-svg {
+      width: 100%;
+      overflow: visible;
+    }
+
+    /* Result measure */
+    .measure-result {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #001a00, #001500);
+      border: 1px solid #2a4a2a;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 14px;
+    }
+
+    .measure-label {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .measure-value {
+      font-family: 'Orbitron', monospace;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--green);
+      text-shadow: 0 0 15px rgba(57,255,20,0.4);
+    }
+
+    .measure-unit {
+      font-size: 14px;
+      color: #2a8a2a;
+    }
+
+    /* footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      margin-top: 20px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(245,200,66,0.4);
+    }
+
+    /* Glow line separator */
+    .glow-sep {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      margin: 6px 0 14px;
+      opacity: 0.5;
+    }
+
+    .error-msg {
+      color: #ff4444;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+
+<!-- DÉPARTEMENT -->
+<div class="card">
+  <div class="card-title">
+    <span class="badge">📍</span>
+    Localisation
+  </div>
+  <label>Département</label>
+  <select id="departement" onchange="onDeptChange()">
+    <option value="">— Choisir un département —</option>
+    <option value="01">01 – Ain</option>
+    <option value="02">02 – Aisne</option>
+    <option value="03">03 – Allier</option>
+    <option value="04">04 – Alpes-de-Haute-Provence</option>
+    <option value="05">05 – Hautes-Alpes</option>
+    <option value="06">06 – Alpes-Maritimes</option>
+    <option value="07">07 – Ardèche</option>
+    <option value="08">08 – Ardennes</option>
+    <option value="09">09 – Ariège</option>
+    <option value="10">10 – Aube</option>
+    <option value="11">11 – Aude</option>
+    <option value="12">12 – Aveyron</option>
+    <option value="13">13 – Bouches-du-Rhône</option>
+    <option value="14">14 – Calvados</option>
+    <option value="15">15 – Cantal</option>
+    <option value="16">16 – Charente</option>
+    <option value="17">17 – Charente-Maritime</option>
+    <option value="18">18 – Cher</option>
+    <option value="19">19 – Corrèze</option>
+    <option value="2A">2A – Corse-du-Sud</option>
+    <option value="2B">2B – Haute-Corse</option>
+    <option value="21">21 – Côte-d'Or</option>
+    <option value="22">22 – Côtes-d'Armor</option>
+    <option value="23">23 – Creuse</option>
+    <option value="24">24 – Dordogne</option>
+    <option value="25">25 – Doubs</option>
+    <option value="26">26 – Drôme</option>
+    <option value="27">27 – Eure</option>
+    <option value="28">28 – Eure-et-Loir</option>
+    <option value="29">29 – Finistère</option>
+    <option value="30">30 – Gard</option>
+    <option value="31">31 – Haute-Garonne</option>
+    <option value="32">32 – Gers</option>
+    <option value="33">33 – Gironde</option>
+    <option value="34">34 – Hérault</option>
+    <option value="35">35 – Ille-et-Vilaine</option>
+    <option value="36">36 – Indre</option>
+    <option value="37">37 – Indre-et-Loire</option>
+    <option value="38">38 – Isère</option>
+    <option value="39">39 – Jura</option>
+    <option value="40">40 – Landes</option>
+    <option value="41">41 – Loir-et-Cher</option>
+    <option value="42">42 – Loire</option>
+    <option value="43">43 – Haute-Loire</option>
+    <option value="44">44 – Loire-Atlantique</option>
+    <option value="45">45 – Loiret</option>
+    <option value="46">46 – Lot</option>
+    <option value="47">47 – Lot-et-Garonne</option>
+    <option value="48">48 – Lozère</option>
+    <option value="49">49 – Maine-et-Loire</option>
+    <option value="50">50 – Manche</option>
+    <option value="51">51 – Marne</option>
+    <option value="52">52 – Haute-Marne</option>
+    <option value="53">53 – Mayenne</option>
+    <option value="54">54 – Meurthe-et-Moselle</option>
+    <option value="55">55 – Meuse</option>
+    <option value="56">56 – Morbihan</option>
+    <option value="57">57 – Moselle</option>
+    <option value="58">58 – Nièvre</option>
+    <option value="59">59 – Nord</option>
+    <option value="60">60 – Oise</option>
+    <option value="61">61 – Orne</option>
+    <option value="62">62 – Pas-de-Calais</option>
+    <option value="63">63 – Puy-de-Dôme</option>
+    <option value="64">64 – Pyrénées-Atlantiques</option>
+    <option value="65">65 – Hautes-Pyrénées</option>
+    <option value="66">66 – Pyrénées-Orientales</option>
+    <option value="67">67 – Bas-Rhin</option>
+    <option value="68">68 – Haut-Rhin</option>
+    <option value="69">69 – Rhône</option>
+    <option value="70">70 – Haute-Saône</option>
+    <option value="71">71 – Saône-et-Loire</option>
+    <option value="72">72 – Sarthe</option>
+    <option value="73">73 – Savoie</option>
+    <option value="74">74 – Haute-Savoie</option>
+    <option value="75">75 – Paris</option>
+    <option value="76">76 – Seine-Maritime</option>
+    <option value="77">77 – Seine-et-Marne</option>
+    <option value="78">78 – Yvelines</option>
+    <option value="79">79 – Deux-Sèvres</option>
+    <option value="80">80 – Somme</option>
+    <option value="81">81 – Tarn</option>
+    <option value="82">82 – Tarn-et-Garonne</option>
+    <option value="83">83 – Var</option>
+    <option value="84">84 – Vaucluse</option>
+    <option value="85">85 – Vendée</option>
+    <option value="86">86 – Vienne</option>
+    <option value="87">87 – Haute-Vienne</option>
+    <option value="88">88 – Vosges</option>
+    <option value="89">89 – Yonne</option>
+    <option value="90">90 – Territoire de Belfort</option>
+    <option value="91">91 – Essonne</option>
+    <option value="92">92 – Hauts-de-Seine</option>
+    <option value="93">93 – Seine-Saint-Denis</option>
+    <option value="94">94 – Val-de-Marne</option>
+    <option value="95">95 – Val-d'Oise</option>
+    <option value="971">971 – Guadeloupe</option>
+    <option value="972">972 – Martinique</option>
+    <option value="973">973 – Guyane</option>
+    <option value="974">974 – La Réunion</option>
+    <option value="976">976 – Mayotte</option>
+  </select>
+  <div id="deptInfo" style="display:none;margin-top:10px;font-size:13px;color:#666;letter-spacing:1px"></div>
+</div>
+
+<!-- PARTIE 1 : ANGLE OPTIMAL -->
+<div class="card">
+  <div class="card-title">
+    <span class="badge">1</span>
+    Angle d'inclinaison optimal
+  </div>
+
+  <label>Période de l'année</label>
+  <select id="periode" onchange="calculerAngle()">
+    <option value="">— Choisir une période —</option>
+    <option value="hiver">❄️ Hiver (déc – fév)</option>
+    <option value="printemps">🌸 Printemps (mars – mai)</option>
+    <option value="ete">☀️ Été (juin – août)</option>
+    <option value="automne">🍂 Automne (sept – nov)</option>
+    <option value="annee">📅 Toute l'année (moyen)</option>
+  </select>
+
+  <div id="result1" style="display:none">
+    <div class="result-box">
+      <div class="angle-display" id="angleVal">—</div>
+      <div class="angle-label">Inclinaison recommandée</div>
+      <div class="tip-text" id="angleTip"></div>
+    </div>
+
+    <!-- Schéma panneau visuel : soleil à gauche, panneau à droite -->
+    <div class="panel-visual">
+      <div class="panel-svg-container">
+        <svg id="panelSvg" viewBox="0 0 300 170" class="triangle-svg" style="margin-top:12px">
+          <!-- Sol (ligne de base) -->
+          <line x1="10" y1="145" x2="290" y2="145" stroke="#444" stroke-width="2.5"/>
+          <text x="150" y="160" text-anchor="middle" fill="#555" font-size="10" font-family="Rajdhani">Sol</text>
+
+          <!-- ☀️ Soleil cool avec lunettes (à gauche) -->
+          <g id="coolSun" transform="translate(38,38)">
+            <!-- Rayons -->
+            <g stroke="#f5a800" stroke-width="3" stroke-linecap="round">
+              <line x1="0" y1="-28" x2="0" y2="-20"/>
+              <line x1="0" y1="20" x2="0" y2="28"/>
+              <line x1="-28" y1="0" x2="-20" y2="0"/>
+              <line x1="20" y1="0" x2="28" y2="0"/>
+              <line x1="-20" y1="-20" x2="-14" y2="-14"/>
+              <line x1="14" y1="-14" x2="20" y2="-20"/>
+              <line x1="-20" y1="20" x2="-14" y2="14"/>
+              <line x1="14" y1="14" x2="20" y2="20"/>
+            </g>
+            <!-- Corps du soleil dégradé -->
+            <defs>
+              <radialGradient id="sunGrad" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#fff7a0"/>
+                <stop offset="50%" stop-color="#ffd700"/>
+                <stop offset="100%" stop-color="#f5a800"/>
+              </radialGradient>
+            </defs>
+            <circle r="18" fill="url(#sunGrad)" stroke="#f5a800" stroke-width="1"/>
+            <!-- Sourire -->
+            <path d="M -7 6 Q 0 13 7 6" fill="none" stroke="#e08000" stroke-width="2" stroke-linecap="round"/>
+            <!-- Lunettes aviateur -->
+            <!-- Monture -->
+            <rect x="-16" y="-7" width="13" height="10" rx="4" fill="#1a1208" stroke="#555" stroke-width="1.2" opacity="0.92"/>
+            <rect x="3" y="-7" width="13" height="10" rx="4" fill="#1a1208" stroke="#555" stroke-width="1.2" opacity="0.92"/>
+            <!-- Pont -->
+            <line x1="-3" y1="-3" x2="3" y2="-3" stroke="#888" stroke-width="1.2"/>
+            <!-- Branches -->
+            <line x1="-16" y1="-3" x2="-20" y2="-5" stroke="#888" stroke-width="1.2"/>
+            <line x1="16" y1="-3" x2="20" y2="-5" stroke="#888" stroke-width="1.2"/>
+            <!-- Reflet gauche -->
+            <ellipse cx="-11" cy="-4" rx="3" ry="2" fill="rgba(255,255,255,0.18)" transform="rotate(-15,-11,-4)"/>
+            <!-- Reflet droit -->
+            <ellipse cx="9" cy="-4" rx="3" ry="2" fill="rgba(255,255,255,0.18)" transform="rotate(-15,9,-4)"/>
+          </g>
+
+          <!-- Panneau (part du sol côté droit) -->
+          <line id="panelLine" x1="170" y1="145" x2="270" y2="65" stroke="#f5c842" stroke-width="4" stroke-linecap="round"/>
+          <!-- Arc angle entre sol et panneau -->
+          <path id="angleArc" d="" fill="rgba(255,124,31,0.12)" stroke="#ff7c1f" stroke-width="2"/>
+          <!-- Angle label -->
+          <text id="angleText" fill="#ff7c1f" font-size="13" font-family="Orbitron" font-weight="700"></text>
+          <!-- Label panneau -->
+          <text id="panelLabel" fill="#f5c842" font-size="11" font-family="Rajdhani" font-weight="600"></text>
+          <!-- Point A -->
+          <circle cx="170" cy="145" r="3" fill="#ff7c1f"/>
+          <text x="158" y="162" fill="#ff7c1f" font-size="12" font-family="Orbitron" font-weight="700">A</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PARTIE 2 : HAUTEUR VERTICALE -->
+<div class="card">
+  <div class="card-title">
+    <span class="badge">2</span>
+    Hauteur verticale du panneau (H)
+  </div>
+
+  <p style="font-size:13px;color:#888;margin-bottom:14px;line-height:1.5">
+    Depuis l'angle A (partie 1) et la longueur du panneau, calcule la hauteur verticale <span style="color:var(--green);font-weight:700">H</span> du point haut du panneau au-dessus du sol.
+  </p>
+
+  <div class="triangle-inputs">
+    <div class="input-group">
+      <label>Longueur panneau (AB)</label>
+      <input type="number" id="hypo" value="1.72" step="0.01" min="0.01" oninput="calculerHauteur()" />
+      <div class="input-unit">mètres</div>
+    </div>
+    <div class="input-group">
+      <label>Angle A (°)</label>
+      <input type="number" id="angleInput" value="40" step="1" min="1" max="89" oninput="calculerHauteur()" />
+      <div class="input-unit">degrés</div>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculerHauteur()">&#x26A1; Calculer la hauteur H</button>
+
+  <div class="triangle-canvas">
+    <svg id="triSvg" viewBox="0 0 300 190" class="triangle-svg">
+      <!-- Sol -->
+      <line x1="10" y1="160" x2="290" y2="160" stroke="#444" stroke-width="2"/>
+      <!-- Triangle rempli -->
+      <polygon id="triPoly" points="30,160 240,160 240,50" fill="rgba(245,200,66,0.05)" stroke="none"/>
+      <!-- Cote adjacent AC (sol) -->
+      <line id="lineAC" x1="30" y1="160" x2="240" y2="160" stroke="#555" stroke-width="1.5"/>
+      <!-- Panneau AB (hypotenuse) -->
+      <line id="lineAB" x1="30" y1="160" x2="240" y2="50" stroke="#f5c842" stroke-width="3" stroke-linecap="round"/>
+      <!-- Hauteur H = BC (vertical) -->
+      <line id="lineBC" x1="240" y1="50" x2="240" y2="160" stroke="#39ff14" stroke-width="2" stroke-dasharray="5,3"/>
+      <!-- Ligne H avec fleches -->
+      <line id="hArrow" x1="265" y1="55" x2="265" y2="155" stroke="#39ff14" stroke-width="1.5"/>
+      <line id="hTickTop" x1="240" y1="55" x2="268" y2="55" stroke="#39ff14" stroke-width="1" stroke-dasharray="3,2"/>
+      <line id="hTickBot" x1="240" y1="155" x2="268" y2="155" stroke="#39ff14" stroke-width="1" stroke-dasharray="3,2"/>
+      <!-- Tetes de fleche H -->
+      <polygon id="arrowT" points="265,50 262,58 268,58" fill="#39ff14"/>
+      <polygon id="arrowB" points="265,160 262,152 268,152" fill="#39ff14"/>
+      <!-- Label H -->
+      <text id="hLabel" x="272" y="108" fill="#39ff14" font-size="13" font-family="Orbitron" font-weight="700" dominant-baseline="middle">H</text>
+      <text id="hValue" x="272" y="122" fill="#39ff14" font-size="9" font-family="Orbitron" dominant-baseline="middle"></text>
+      <!-- Angle droit C -->
+      <rect id="rightAngle" x="225" y="145" width="15" height="15" fill="none" stroke="#888" stroke-width="1.5"/>
+      <!-- Arc angle A -->
+      <path id="triArcA" d="" fill="rgba(255,124,31,0.1)" stroke="#ff7c1f" stroke-width="1.5"/>
+      <!-- Labels sommets -->
+      <text id="lblA" x="16" y="175" fill="#ff7c1f" font-size="13" font-family="Orbitron" font-weight="700">A</text>
+      <text id="lblB" x="244" y="46" fill="#e8e8e8" font-size="13" font-family="Orbitron" font-weight="700">B</text>
+      <text id="lblC" x="244" y="175" fill="#888" font-size="13" font-family="Orbitron" font-weight="700">C</text>
+      <!-- Label AB panneau -->
+      <text id="abLabel" x="110" y="90" fill="#f5c842" font-size="10" font-family="Orbitron" transform="rotate(-33,110,90)"></text>
+      <!-- Label AC adjacent -->
+      <text id="acLabel" x="130" y="175" text-anchor="middle" fill="#555" font-size="9" font-family="Rajdhani"></text>
+      <!-- Angle A valeur -->
+      <text id="angleALabel" x="58" y="152" fill="#ff7c1f" font-size="10" font-family="Orbitron"></text>
+    </svg>
+  </div>
+
+  <div id="triResult" style="display:none" class="measure-result">
+    <div>
+      <div class="measure-label">Hauteur H (BC)</div>
+      <div style="font-size:11px;color:#555;margin-top:2px">= AB × sin(A)</div>
+    </div>
+    <div>
+      <span class="measure-value" id="adjVal">—</span>
+      <span class="measure-unit"> m</span>
+    </div>
+  </div>
+  <div id="triError" class="error-msg" style="display:none"></div>
+</div>
+
+<footer></footer>
+
+<script>
+// ── Latitudes par département ─────────────────────────────────────────────────
+const DEPT_LAT = {
+  "01":46.2,"02":49.6,"03":46.3,"04":44.1,"05":44.7,"06":43.9,"07":44.7,
+  "08":49.8,"09":43.0,"10":48.3,"11":43.2,"12":44.3,"13":43.5,"14":49.1,
+  "15":45.1,"16":45.7,"17":45.8,"18":47.1,"19":45.3,"2A":41.9,"2B":42.4,
+  "21":47.3,"22":48.4,"23":46.0,"24":45.1,"25":47.2,"26":44.7,"27":49.1,
+  "28":48.4,"29":48.2,"30":44.0,"31":43.6,"32":43.8,"33":44.8,"34":43.6,
+  "35":48.1,"36":46.8,"37":47.4,"38":45.2,"39":46.7,"40":43.9,"41":47.6,
+  "42":45.7,"43":45.1,"44":47.3,"45":47.9,"46":44.4,"47":44.4,"48":44.5,
+  "49":47.5,"50":49.1,"51":49.0,"52":48.1,"53":48.1,"54":48.7,"55":48.9,
+  "56":47.8,"57":49.1,"58":47.1,"59":50.4,"60":49.4,"61":48.6,"62":50.5,
+  "63":45.8,"64":43.3,"65":43.1,"66":42.7,"67":48.6,"68":47.8,"69":45.8,
+  "70":47.6,"71":46.6,"72":48.0,"73":45.5,"74":46.0,"75":48.9,"76":49.5,
+  "77":48.6,"78":48.8,"79":46.6,"80":49.9,"81":43.9,"82":44.0,"83":43.5,
+  "84":44.0,"85":46.7,"86":46.6,"87":45.8,"88":48.2,"89":47.8,"90":47.6,
+  "91":48.5,"92":48.9,"93":48.9,"94":48.8,"95":49.1,
+  "971":16.3,"972":14.6,"973":4.0,"974":-21.1,"976":-12.8
+};
+
+// Calcule les angles optimaux selon la latitude
+// Offsets calibrés sur les données de référence du Pas-de-Calais (lat 50.5°N)
+// et cohérents avec les recommandations ADEME / pvgis.ec.europa.eu :
+// - Hiver     : lat + 12°  (soleil très bas, on incline fortement)
+// - Printemps : lat - 6°
+// - Été       : lat - 22°  (soleil haut, faible inclinaison)
+// - Automne   : lat + 0°   (angle = latitude)
+// - Année     : lat - 10°  (compromis annuel)
+function anglesParLatitude(lat) {
+  const clamp = (v) => Math.round(Math.max(5, Math.min(85, v)));
+  return {
+    hiver:     clamp(lat + 12),
+    printemps: clamp(lat - 5.5),
+    ete:       clamp(lat - 22),
+    automne:   clamp(lat + 0),
+    annee:     clamp(lat - 10)
+  };
+}
+
+let currentLat = 50.5; // Pas-de-Calais par défaut
+let currentDeptName = "Pas-de-Calais";
+
+function onDeptChange() {
+  const d = document.getElementById("departement").value;
+  if (!d) return;
+  currentLat = DEPT_LAT[d] || 48.0;
+  const opt = document.querySelector(`#departement option[value="${d}"]`);
+  currentDeptName = opt ? opt.textContent.replace(/^\d+[A-Z]* – /, "") : d;
+  document.getElementById("deptInfo").style.display = "block";
+  document.getElementById("deptInfo").innerHTML =
+    `📍 ${currentDeptName} · latitude ${currentLat > 0 ? currentLat : Math.abs(currentLat)+'°S'}°N`;
+  // Recalculer si une saison est déjà sélectionnée
+  if (document.getElementById("periode").value) calculerAngle();
+}
+
+function calculerAngle() {
+  const p = document.getElementById("periode").value;
+  const box = document.getElementById("result1");
+  if (!p) { box.style.display = "none"; return; }
+  const angles = anglesParLatitude(currentLat);
+  const a = angles[p];
+  const tips = {
+    hiver:     `En hiver à ${currentDeptName}, le soleil est bas. Un angle de <span>${a}°</span> maximise la captation hivernale.`,
+    printemps: `Au printemps à ${currentDeptName}, un angle de <span>${a}°</span> offre un excellent équilibre.`,
+    ete:       `En été à ${currentDeptName}, le soleil est haut. Un angle de <span>${a}°</span> capte au mieux les rayons estivaux.`,
+    automne:   `En automne à ${currentDeptName}, un angle de <span>${a}°</span> compense la baisse de hauteur solaire.`,
+    annee:     `Pour une installation fixe à ${currentDeptName} (lat. ${currentLat}°N), <span>${a}°</span> est l'angle optimal toute l'année.`
+  };
+  document.getElementById("angleVal").innerHTML = a + '<span class="angle-unit">°</span>';
+  document.getElementById("angleTip").innerHTML = tips[p];
+  box.style.display = "block";
+  dessinerPanneau(a);
+  document.getElementById("angleInput").value = a;
+  calculerHauteur();
+}
+
+function dessinerPanneau(angleDeg) {
+  const rad = angleDeg * Math.PI / 180;
+  const ox = 170, oy = 145, maxLen = 110;
+  const ex = ox + maxLen * Math.cos(rad);
+  const ey = oy - maxLen * Math.sin(rad);
+  document.getElementById('panelLine').setAttribute('x1', ox);
+  document.getElementById('panelLine').setAttribute('y1', oy);
+  document.getElementById('panelLine').setAttribute('x2', Math.min(ex, 285));
+  document.getElementById('panelLine').setAttribute('y2', ey);
+  // Arc entre sol et panneau (remplit la zone)
+  const r = 40;
+  const arcX = ox + r * Math.cos(rad);
+  const arcY = oy - r * Math.sin(rad);
+  document.getElementById('angleArc').setAttribute('d',
+    `M ${ox + r} ${oy} A ${r} ${r} 0 0 1 ${arcX} ${arcY} L ${ox} ${oy} Z`
+  );
+  const tAngle = rad / 2;
+  document.getElementById('angleText').textContent = angleDeg + '\u00b0';
+  document.getElementById('angleText').setAttribute('x', ox + (r + 14) * Math.cos(tAngle));
+  document.getElementById('angleText').setAttribute('y', oy - (r + 14) * Math.sin(tAngle) + 4);
+  // Label panneau centré
+  const mx = ox + (maxLen * 0.45) * Math.cos(rad);
+  const my = oy - (maxLen * 0.45) * Math.sin(rad);
+  const lbl = document.getElementById('panelLabel');
+  lbl.textContent = 'Panneau';
+  lbl.setAttribute('x', mx);
+  lbl.setAttribute('y', my - 7);
+  lbl.setAttribute('transform', `rotate(${-angleDeg},${mx},${my - 7})`);
+}
+
+// ── PARTIE 2 : Hauteur verticale H = AB * sin(A) ─────────────────────────────
+function calculerHauteur() {
+  const hypo  = parseFloat(document.getElementById('hypo').value);
+  const angleA = parseFloat(document.getElementById('angleInput').value);
+  const resBox = document.getElementById('triResult');
+  const errBox = document.getElementById('triError');
+
+  if (isNaN(hypo) || isNaN(angleA) || hypo <= 0 || angleA <= 0 || angleA >= 90) {
+    resBox.style.display = 'none'; errBox.style.display = 'none'; return;
+  }
+  errBox.style.display = 'none';
+
+  const rad = angleA * Math.PI / 180;
+  const H   = hypo * Math.sin(rad);   // hauteur verticale BC
+  const AC  = hypo * Math.cos(rad);   // adjacent
+
+  document.getElementById('adjVal').textContent = H.toFixed(3);
+  document.getElementById('hValue').textContent = H.toFixed(2) + ' m';
+  resBox.style.display = 'flex';
+
+  // Dessin proportionnel
+  const svgW = 210, svgH = 110; // espace dispo (A à x=30, sol à y=160)
+  const scale = Math.min(svgW / AC, svgH / H);
+  const sx = AC * scale, sy = H * scale;
+  const Ax = 30, Ay = 160;
+  const Cx = Ax + sx, Cy = Ay;
+  const Bx = Cx, By = Ay - sy;
+
+  document.getElementById('triPoly').setAttribute('points', `${Ax},${Ay} ${Cx},${Cy} ${Bx},${By}`);
+  document.getElementById('lineAC').setAttribute('x1', Ax); document.getElementById('lineAC').setAttribute('y1', Ay);
+  document.getElementById('lineAC').setAttribute('x2', Cx); document.getElementById('lineAC').setAttribute('y2', Cy);
+  document.getElementById('lineAB').setAttribute('x1', Ax); document.getElementById('lineAB').setAttribute('y1', Ay);
+  document.getElementById('lineAB').setAttribute('x2', Bx); document.getElementById('lineAB').setAttribute('y2', By);
+  document.getElementById('lineBC').setAttribute('x1', Bx); document.getElementById('lineBC').setAttribute('y1', By);
+  document.getElementById('lineBC').setAttribute('x2', Cx); document.getElementById('lineBC').setAttribute('y2', Cy);
+
+  // Flèche H (à droite de BC)
+  const hx = Bx + 22;
+  document.getElementById('hArrow').setAttribute('x1', hx); document.getElementById('hArrow').setAttribute('y1', By + 5);
+  document.getElementById('hArrow').setAttribute('x2', hx); document.getElementById('hArrow').setAttribute('y2', Cy - 5);
+  document.getElementById('hTickTop').setAttribute('x1', Bx); document.getElementById('hTickTop').setAttribute('y1', By + 4);
+  document.getElementById('hTickTop').setAttribute('x2', hx + 3); document.getElementById('hTickTop').setAttribute('y2', By + 4);
+  document.getElementById('hTickBot').setAttribute('x1', Bx); document.getElementById('hTickBot').setAttribute('y1', Cy - 4);
+  document.getElementById('hTickBot').setAttribute('x2', hx + 3); document.getElementById('hTickBot').setAttribute('y2', Cy - 4);
+  document.getElementById('arrowT').setAttribute('points', `${hx},${By} ${hx-3},${By+8} ${hx+3},${By+8}`);
+  document.getElementById('arrowB').setAttribute('points', `${hx},${Cy} ${hx-3},${Cy-8} ${hx+3},${Cy-8}`);
+  document.getElementById('hLabel').setAttribute('x', hx + 6);
+  document.getElementById('hLabel').setAttribute('y', (By + Cy) / 2 - 7);
+  document.getElementById('hValue').setAttribute('x', hx + 6);
+  document.getElementById('hValue').setAttribute('y', (By + Cy) / 2 + 7);
+
+  // Angle droit
+  document.getElementById('rightAngle').setAttribute('x', Cx - 15);
+  document.getElementById('rightAngle').setAttribute('y', Cy - 15);
+
+  // Arc angle A
+  const rA = Math.min(35, sx * 0.3);
+  const arcAx = Ax + rA * Math.cos(rad);
+  const arcAy = Ay - rA * Math.sin(rad);
+  document.getElementById('triArcA').setAttribute('d',
+    `M ${Ax + rA} ${Ay} A ${rA} ${rA} 0 0 1 ${arcAx} ${arcAy} L ${Ax} ${Ay} Z`
+  );
+
+  // Labels
+  document.getElementById('lblA').setAttribute('x', Ax - 14); document.getElementById('lblA').setAttribute('y', Ay + 15);
+  document.getElementById('lblB').setAttribute('x', Bx + 4);  document.getElementById('lblB').setAttribute('y', By - 4);
+  document.getElementById('lblC').setAttribute('x', Cx + 4);  document.getElementById('lblC').setAttribute('y', Cy + 15);
+  document.getElementById('abLabel').textContent = hypo.toFixed(2) + ' m';
+  const mabx = (Ax + Bx) / 2 - 8, maby = (Ay + By) / 2;
+  document.getElementById('abLabel').setAttribute('x', mabx);
+  document.getElementById('abLabel').setAttribute('y', maby);
+  document.getElementById('abLabel').setAttribute('transform', `rotate(${-angleA},${mabx},${maby})`);
+  document.getElementById('acLabel').setAttribute('x', (Ax + Cx) / 2);
+  document.getElementById('acLabel').setAttribute('y', Ay + 13);
+  document.getElementById('acLabel').textContent = AC.toFixed(2) + ' m (AC)';
+  document.getElementById('angleALabel').setAttribute('x', Ax + rA * 0.9 + 6);
+  document.getElementById('angleALabel').setAttribute('y', Ay - 8);
+  document.getElementById('angleALabel').textContent = angleA + '\u00b0';
+}
+
+// Init au chargement
+window.addEventListener('load', () => { calculerHauteur(); });
+</script>
+</body>
+</html>
