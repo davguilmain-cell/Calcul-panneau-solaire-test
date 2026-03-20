@@ -655,6 +655,11 @@ function onDeptChange() {
 function calculerAngle() {
   const p = document.getElementById("periode").value;
   const box = document.getElementById("result1");
+  if (!document.getElementById("departement").value) {
+    alert("⚠️ Veuillez d'abord sélectionner votre département !");
+    document.getElementById("periode").value = "";
+    box.style.display = "none"; return;
+  }
   if (!p) { box.style.display = "none"; return; }
   const angles = anglesParLatitude(currentLat);
   const a = angles[p];
